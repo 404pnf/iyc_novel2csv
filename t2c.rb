@@ -5,7 +5,9 @@ require 'find'
 $input = File.expand_path(ARGV[0])
 $output = File.expand_path(ARGV[1])
 def t2c(file)
-  File.open(file, 'r:bom|utf-8') do |f| # ruby 1.9.2 accepts r:bom|utf-8 and automatcially removes BOM
+  # http://stackoverflow.com/questions/9886705/how-to-write-bom-marker-to-a-file-in-ruby
+  # ruby 1.9.2 accepts r:bom|utf-8 and automatcially removes BOM
+  File.open(file, 'r:bom|utf-8') do |f| 
     input = f.read
     file_with_bom
     write_csv(input.txt2arr)
