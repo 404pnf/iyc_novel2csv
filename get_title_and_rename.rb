@@ -8,9 +8,7 @@ Find.find(path) do |file|
   next if File.directory? file
   next unless file =~ /.txt$/i
   filepath = File.dirname file
-#  p filepath
   filename = File.basename(file, '.txt')
- # p filename
   File.open(file, 'r') do |l|
     title = l.gets
     # The (?:…) construct provides grouping without capturing.
@@ -19,14 +17,10 @@ Find.find(path) do |file|
     else
       $title = ''
     end
-#    p $title
   end
   newfilename = filename.downcase + '_' + $title + '.txt'
   newfilename = newfilename.gsub(/_+\./, '.') # handle "An_Essay_on_Profits_.txt"
-  #p newfilename
- # p "rename #{filename} to #{newfilename}"
-#  p filepath
- # p file
-  FileUtils.mv(file, "#{filepath}/#{newfilename}") # do NOT separate path and filename with '/', filepath has the ending slash already
+  p "rename #{filename} to #{newfilename}"
+  FileUtils.mv(file, "#{filepath}/#{newfilename}") 
 end
 
