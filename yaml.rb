@@ -15,14 +15,33 @@ def t2c(file)
   # ruby 1.9.2 accepts r:bom|utf-8 and automatcially removes BOM
   File.open(file, 'r:bom|utf-8') do |f| 
     text = f.read
-    tokenizer = Punkt::SentenceTokenizer.new(text)
-    result    = tokenizer.sentences_from_text(text, :output => :sentences_text)
-    # result is an array
-    result.map! {|i| i.gsub(/\r/, "\n")}
-    result.map! {|i| i.gsub(/\n+/, ' ')} # there are \r\n within sentences 
-#    file_with_bom
-#    write_yaml(input.txt2arr)
-    write_yaml(result)
+    text = text.sub(/^\s+/, '')
+    text = text.gsub(/\r/, '')
+    #    text = text.gsub(/^\s+/, '')
+    LINESEPARATOR = i-am-the-line-separator-biyatch
+    text = text.gsub(/\n\n/, 'i-am-the-line-separator-biyatch')
+    text = text.gsub(/\n/, " ")
+#    text = text.gsub( 'i-am-the-line-separator-biyatch', "\n\n")
+#    arr = text.split(/\n\n/) # split text by paragraph
+    text.each(LINESEPARATOR) do |para|
+    arr.reject! {|i| i == ''}
+    # p arr.size
+    result = []
+    arr.map! do |item|
+      tokenizer = Punkt::SentenceTokenizer.new(item)
+      result    = tokenizer.sentences_from_text(item, :output => :sentences_text)
+      # result is an array
+      item = result
+      item.map! {|i| i.gsub(/\r/, "\n")}
+      item.map! {|i| i.gsub(/\n+/, ' ')} # there are \r\n within sentences 
+      #     item.join(' ')
+      #    file_with_bom
+      #    write_yaml(input.txt2arr)
+      #pp item
+    end
+    
+    write_yaml(arr)
+    pp arr
   end
 end
 def r_t2c(input, output)

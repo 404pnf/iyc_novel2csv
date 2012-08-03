@@ -15,6 +15,22 @@ class String
     arr.each {|i| p i =~ /^\s/}
     return arr
   end
+  LINESEPARATOR = 'i-am-the-line-separator-and-i-am-so-fine-i-work-all-day-i-sleep-all-night'
+  def remove_line_feed
+    text = self.gsub(/\r/, '')
+    text = text.gsub(/\n\n+/, "\n\n")
+    text = text.gsub(/\n\n+/, LINESEPARATOR)
+    new = ''
+    text.each_line do |l|
+      if l =~ /^\s/ #开头是空白的行不处理
+        new << l
+      else
+        new << l.gsub(/\n/, ' ')
+      end
+    end
+    new = new.gsub(LINESEPARATOR, "\n\n")
+    return new
+  end
 end
 
 def file_with_bom
