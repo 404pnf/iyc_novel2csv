@@ -8,10 +8,12 @@ class String
   def txt2arr
     str = self.gsub(/\r/,'')
     tmp = str.split(/\n\n/)
-    arr = tmp.reject {|i| i == ''} 
-    newarr  = []
-    arr.each {|i| newarr << i.gsub(/\n/, ' ')}
-    return newarr
+    arr = tmp.delete_if {|i| i == ''} 
+    arr = arr.delete_if {|i| i =~ /^\s$/} 
+    arr.map! {|i| i.gsub(/\n/, ' ')}
+    arr.map! {|i| i.sub(/^\s+/,'')}
+    arr.each {|i| p i =~ /^\s/}
+    return arr
   end
 end
 
@@ -19,19 +21,34 @@ def file_with_bom
   # excel不认识utf-8的csv文件，必须加不合规范的BOM头
   # 参考： http://stackoverflow.com/questions/155097/microsoft-excel-mangles-diacritics-in-csv-files
   FileUtils.mkdir_p("#{$newpath}") unless File.exist?("#{$newpath}")
-  File.open("#{$newpath}/#{$inputfile}txt", 'w')do |f|
-#    f.puts  "\uFEFF"
+#  File.open("#{$newpath}/#{$inputfile}txt", 'w')do |f|
+  File.open("#{$newpath}/#{$inputfile}csv", 'w')do |f|
+    #    f.puts  "\uFEFF"
   end
 end
+def write_csv(arr)
+  # 悲剧，ruby的csv默认就是不quote值，浪费了半个小时才找到:force_quote用法
+  # http://stackoverflow.com/questions/5831366/quote-all-fields-in-csv-output
+  CSV.open("#{$newpath}/#{$inputfile}csv", 'a', {:force_quotes=>true}) do |csv|  # append mode
+    arr.each do |paragraph| 
+      csv << [paragraph]
+    end
+  end
+end
+
 def write_yaml(arr)
   FileUtils.mkdir_p("#{$newpath}") unless File.exist?("#{$newpath}")
-  hash = Hash.new {|h, k| h[k] = []}
+  #  hash = Hash.new {|h, k| h[k] = []}
+  hash = Hash.new{|h,k| h[k]=Hash.new(&h.default_proc) } 
   arr.each_with_index do |item,index| 
-    key = sprintf("%06d", index )
-    hash[key] = [item]
-    hash[key] << 'zh_CN'
+    key = sprintf("%05d", index )
+    item.each_with_index do |i, n|
+      hash[key][n] = i
+#      hash[key][n] << 'zh_CN'
+    end
   end
   text = hash.to_yaml
+  #pp text
   File.open("#{$newpath}/#{$inputfile}txt", 'a', ) do |file|  # append mode
     file.puts  text
   end
