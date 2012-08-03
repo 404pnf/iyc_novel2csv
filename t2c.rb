@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-require './lib/txt2csv.rb'
+require './lib/class.rb'
 require 'find'
 
 $input = File.expand_path(ARGV[0])
@@ -10,7 +10,8 @@ def t2c(file)
   File.open(file, 'r:bom|utf-8') do |f| 
     input = f.read
     file_with_bom
-    write_csv(input.txt2arr)
+#    write_csv(input.txt2arr)
+    write_yaml(input.txt2arr)
   end
 end
 def r_t2c(input, output)
