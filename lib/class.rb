@@ -17,7 +17,8 @@ class String
   end
   LINESEPARATOR = 'i-am-the-line-separator-and-i-am-so-fine-i-work-all-day-i-sleep-all-night'
   def remove_line_feed
-    text = self.gsub(/\r/, '')
+    text = self.sub(/^\xef\xbb\xbf/, '') # remove bom
+    text = text.gsub(/\r/, '')
     text = text.gsub(/\n\n+/, "\n\n")
     text = text.gsub(/\n\n+/, LINESEPARATOR)
     new = ''
