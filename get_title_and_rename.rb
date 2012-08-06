@@ -2,6 +2,10 @@
 require 'find'
 require 'fileutils'
 
+# !! update filename in place !!
+# usage: ruby -w script.rb inputfolder
+# files in inputfolder will be renamed accordingly
+
 path = File.expand_path ARGV[0]
 
 Find.find(path) do |file|
@@ -12,15 +16,22 @@ Find.find(path) do |file|
   File.open(file, 'r') do |l|
     title = l.gets
     # The (?:…) construct provides grouping without capturing.
-    if m = title.match(/The Project Gutenberg (?:EBook|etext) of(.+)/i)
-      $title = m[1].to_s.sub(/^ /, '').downcase.tr(',;:', '').gsub(/ /, '_').gsub(/\n|\r/, '')
+    #if m = title.match(/The Project Gutenberg (?:EBook|etext) of(.+)/i)
+    $realtitle = title.split(':')[1] # first line is titile, format,  title: this is title
+
+    if $realtitle
+      $realtitle = $realtitle.strip.tr(',;:', '').gsub(/\s+/, '_').gsub(/\n|\r/, '').downcase
     else
-      $title = ''
+      $realtitle = ''
     end
   end
-  newfilename = filename.downcase + '_' + $title + '.txt'
+#    p $realtitle
+  p filepath
+  newfilename = filename.downcase + '_' + $realtitle + '.txt'
   newfilename = newfilename.gsub(/_+\./, '.') # handle "An_Essay_on_Profits_.txt"
   p "rename #{filename} to #{newfilename}"
-  FileUtils.mv(file, "#{filepath}/#{newfilename}") 
+  if filename + '.txt' != newfilename
+    FileUtils.mv(file, "#{filepath}/#{newfilename}") 
+  end # can't get title for some files so newfilename would be equal to filename, skip those!
 end
 
